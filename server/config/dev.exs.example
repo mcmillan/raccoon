@@ -1,0 +1,7 @@
+import Config
+
+# Port to listen on
+config :raccoon_server, :port, 8080
+
+# UPRN for which to get bin data
+config :raccoon_server, :uprn, "replace_me"

@@ -21,7 +21,10 @@ defmodule Raccoon.MixProject do
   defp deps do
     [
       {:plug_cowboy, "~> 2.0"},
-      {:jason, "~> 1.3"}
+      {:jason, "~> 1.3"},
+      {:floki, "~> 0.32.0"},
+      {:date_time_parser, "~> 1.1.2"},
+      {:httpoison, "~> 1.8"}
     ]
   end
 end
