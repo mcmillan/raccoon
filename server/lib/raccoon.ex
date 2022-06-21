@@ -1,0 +1,2 @@
+defmodule Raccoon do
+end
