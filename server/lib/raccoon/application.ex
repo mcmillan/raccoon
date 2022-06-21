@@ -4,7 +4,10 @@ defmodule Raccoon.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      {Plug.Cowboy, scheme: :http, plug: Raccoon.Router, options: [port: 8080]}
+      {Plug.Cowboy,
+       scheme: :http,
+       plug: Raccoon.Router,
+       options: [port: Application.get_env(:racoon_server, :port)]}
     ]
 
     opts = [strategy: :one_for_one, name: Raccoon.Supervisor]
