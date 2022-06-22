@@ -10,4 +10,9 @@ config :raccoon_server, Raccoon.Scheduler,
     {"0 */6 * * *", {Raccoon.Scheduler, :scrape_and_store, []}}
   ]
 
-import_config("#{Mix.env()}.exs")
+if Mix.env() == :dev do
+  config :raccoon_server, :configure_from_env, false
+  import_config("dev.exs")
+else
+  config :raccoon_server, :configure_from_env, true
+end
