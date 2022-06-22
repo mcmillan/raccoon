@@ -1,30 +1,90 @@
 defmodule Raccoon.Scraper do
+  require Logger
+
   def scrape do
-    {:ok, document} = Floki.parse_document(fetch())
+    {:ok, html} = fetch_html()
 
-    data =
-      document
-      |> Floki.find(".collection")
-      |> Enum.map(&extract_info/1)
+    {:ok, document} = parse_html(html)
 
-    Raccoon.Store.set(data)
+    {:ok, collection_elements} = extract_collection_elements(document)
+
+    formatted_collections =
+      collection_elements
+      |> Enum.map(fn element ->
+        {:ok, formatted_collection} = extract_collection_info(element)
+        formatted_collection
+      end)
+
+    Raccoon.Store.set(formatted_collections)
   end
 
-  defp fetch do
-    {:ok, response} =
+  defp fetch_html do
+    Logger.info("Requesting data from manchester.gov.uk...")
+
+    request =
       HTTPoison.post(
         "https://www.manchester.gov.uk/bincollections",
         URI.encode_query(%{
           mcc_bin_dates_uprn: Application.get_env(:raccoon_server, :uprn),
           mcc_bin_dates_submit: "Go"
         }),
-        %{"content-type": "application/x-www-form-urlencoded"}
+        %{
+          "content-type": "application/x-www-form-urlencoded",
+          "user-agent": "raccoon (github.com/mcmillan/raccoon)"
+        }
       )
 
-    response.body
+    case request do
+      {:ok, %{status_code: 200, body: body}} ->
+        Logger.info("Successfully retrieved page")
+        {:ok, body}
+
+      {:ok, response} ->
+        Logger.error(
+          "Non-200 response code returned from manchester.gov.uk: #{response.status_code}"
+        )
+
+        {:error}
+
+      {:error, error} ->
+        Logger.error("Unable to retrieve data: #{error.reason}")
+        {:error}
+    end
   end
 
-  defp extract_info(element) do
+  defp parse_html(html) do
+    Logger.info("Parsing HTML...")
+
+    case html |> Floki.parse_document() do
+      {:ok, document} ->
+        Logger.info("Parsed successfully")
+        {:ok, document}
+
+      {:error, error} ->
+        Logger.error("Unable to parse HTML: #{error}")
+        {:error}
+    end
+  end
+
+  defp extract_collection_elements(document) do
+    Logger.info("Extracting collections...")
+
+    collections = document |> Floki.find(".collection")
+
+    case Enum.count(collections) do
+      count when count > 0 ->
+        Logger.info("#{count} collections found")
+        {:ok, collections}
+
+      _ ->
+        Logger.error("No collections found (malformed HTML?)")
+        {:error}
+    end
+  end
+
+  defp extract_collection_info(element) do
+    Logger.info("Extracting collection info from element...")
+
     colour =
       element
       |> Floki.find("h3")
@@ -33,7 +93,7 @@ defmodule Raccoon.Scraper do
       |> String.replace("Bin", "")
       |> String.trim()
 
-    {:ok, date} =
+    date =
       element
       |> Floki.find(".caption")
       |> Floki.text()
@@ -41,7 +101,19 @@ defmodule Raccoon.Scraper do
       |> String.trim()
       |> DateTimeParser.parse_date()
 
-    %{id: colour_to_id(colour), colour: colour, date: date}
+    case {colour, date} do
+      {"", _} ->
+        Logger.error("Unable to extract a valid colour")
+        {:error}
+
+      {_, {:error, error}} ->
+        Logger.error("Unable to extract a valid date: #{error}")
+        {:error}
+
+      {colour, {:ok, date}} ->
+        Logger.info("Extracted #{colour} on #{date}")
+        {:ok, %{id: colour_to_id(colour), colour: colour, date: date}}
+    end
   end
 
   defp colour_to_id(colour) do
