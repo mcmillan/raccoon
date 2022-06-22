@@ -2,9 +2,12 @@ defmodule Raccoon.Scraper do
   def scrape do
     {:ok, document} = Floki.parse_document(fetch())
 
-    document
-    |> Floki.find(".collection")
-    |> Enum.map(&extract_info/1)
+    data =
+      document
+      |> Floki.find(".collection")
+      |> Enum.map(&extract_info/1)
+
+    Raccoon.Store.set(data)
   end
 
   defp fetch do
