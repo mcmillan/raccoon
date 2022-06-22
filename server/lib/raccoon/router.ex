@@ -7,7 +7,7 @@ defmodule Raccoon.Router do
   plug(:dispatch)
 
   get "/" do
-    json_string = Jason.encode!(%{bins: []})
+    json_string = Jason.encode!(%{bins: Raccoon.Store.get()})
 
     conn
     |> put_resp_header("content-type", "application/json")

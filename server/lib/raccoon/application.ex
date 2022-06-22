@@ -7,7 +7,8 @@ defmodule Raccoon.Application do
       {Plug.Cowboy,
        scheme: :http,
        plug: Raccoon.Router,
-       options: [port: Application.get_env(:racoon_server, :port)]}
+       options: [port: Application.get_env(:raccoon_server, :port)]},
+      {Redix, {Application.get_env(:raccoon_server, :redis_url), name: :redis}}
     ]
 
     opts = [strategy: :one_for_one, name: Raccoon.Supervisor]
