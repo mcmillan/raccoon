@@ -12,7 +12,6 @@ processes = []
   allowed_public_ports = []
   auto_rollback = true
 
-[[services]]
-  [[mounts]]
-    destination = "/data"
-    source = "redis_server"
+[mounts]
+  destination = "/data"
+  source = "redis_server"
