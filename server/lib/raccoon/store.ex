@@ -21,4 +21,8 @@ defmodule Raccoon.Store do
       ]
     )
   end
+
+  def ping do
+    Redix.command(:redis, ["PING"])
+  end
 end
