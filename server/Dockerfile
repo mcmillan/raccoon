@@ -14,7 +14,7 @@ RUN mix do compile, release
 
 FROM alpine:3.16
 
-RUN apk update && apk upgrade --no-cache && apk add --no-cache ncurses-libs
+RUN apk update && apk upgrade --no-cache && apk add --no-cache ncurses-libs libgcc libstdc++ openssl
 
 ENV MIX_ENV=prod
 ENV PORT=8080
