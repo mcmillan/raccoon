@@ -2,30 +2,27 @@ defmodule Raccoon.Scraper do
   require Logger
 
   def scrape do
-    {:ok, html} = fetch_html()
-
-    {:ok, document} = parse_html(html)
-
-    {:ok, collection_elements} = extract_collection_elements(document)
-
-    formatted_collections =
-      collection_elements
-      |> Enum.map(fn element ->
-        {:ok, formatted_collection} = extract_collection_info(element)
-        formatted_collection
-      end)
-
-    Raccoon.Store.set(formatted_collections)
+    with {:ok, html} <- fetch_html(),
+         {:ok, document} <- parse_html(html),
+         {:ok, collection_elements} <- extract_collection_elements(document),
+         {:ok, result} <- extract_collection_info(collection_elements) do
+      {:ok, result}
+    else
+      _ ->
+        {:error}
+    end
   end
 
   defp fetch_html do
     Logger.info("Requesting data from manchester.gov.uk...")
 
+    uprn = Application.get_env(:raccoon_server, :uprn) || raise "No UPRN to retrieve from"
+
     request =
       HTTPoison.post(
         "https://www.manchester.gov.uk/bincollections",
         URI.encode_query(%{
-          mcc_bin_dates_uprn: Application.get_env(:raccoon_server, :uprn),
+          mcc_bin_dates_uprn: uprn,
           mcc_bin_dates_submit: "Go"
         }),
         %{
@@ -82,7 +79,28 @@ defmodule Raccoon.Scraper do
     end
   end
 
-  defp extract_collection_info(element) do
+  defp extract_collection_info(elements) when is_list(elements) == true do
+    Enum.reduce(
+      elements,
+      {:ok, []},
+      fn element, prev ->
+        result = extract_collection_info(element)
+
+        case {prev, result} do
+          {{:error}, _} ->
+            {:error}
+
+          {{:ok, _}, {:error, _}} ->
+            {:error}
+
+          {{:ok, prev_data}, {:ok, data}} ->
+            {:ok, [data | prev_data]}
+        end
+      end
+    )
+  end
+
+  defp extract_collection_info(element) when is_list(element) == false do
     Logger.info("Extracting collection info from element...")
 
     colour =
