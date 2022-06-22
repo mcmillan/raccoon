@@ -29,7 +29,8 @@ defmodule Raccoon.Scraper do
       element
       |> Floki.find("h3")
       |> Floki.text()
-      |> String.replace(" Bin", "")
+      |> String.replace("DUE TODAY", "")
+      |> String.replace("Bin", "")
       |> String.trim()
 
     {:ok, date} =
