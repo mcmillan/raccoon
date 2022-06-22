@@ -9,7 +9,7 @@ defmodule Raccoon.Application do
 
     children = [
       {Plug.Cowboy, scheme: :http, plug: Raccoon.Router, options: [port: port]},
-      {Redix, {redis_url, name: :redis}},
+      {Redix, {redis_url, name: :redis, socket_opts: [:inet6]}},
       Raccoon.Scheduler
     ]
 
