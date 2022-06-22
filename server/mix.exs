@@ -25,7 +25,8 @@ defmodule Raccoon.MixProject do
       {:floki, "~> 0.32.0"},
       {:date_time_parser, "~> 1.1.2"},
       {:httpoison, "~> 1.8"},
-      {:redix, "~> 1.1"}
+      {:redix, "~> 1.1"},
+      {:quantum, "~> 3.0"}
     ]
   end
 end

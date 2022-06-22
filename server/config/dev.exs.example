@@ -8,3 +8,6 @@ config :raccoon_server, :uprn, "replace_me"
 
 # Redis URL
 config :raccoon_server, :redis_url, "redis://localhost:6379/0"
+
+# Healthchecks.io URL
+config :raccoon_server, :healthchecks_io_url, nil
