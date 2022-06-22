@@ -41,6 +41,14 @@ defmodule Raccoon.Scraper do
       |> String.trim()
       |> DateTimeParser.parse_date()
 
-    %{colour: colour, date: date}
+    %{id: colour_to_id(colour), colour: colour, date: date}
+  end
+
+  defp colour_to_id(colour) do
+    colour
+    |> String.downcase()
+    |> String.replace(~r/[^a-z0-9\s]+/, "")
+    |> String.trim()
+    |> String.replace(~r/\s+/, "_")
   end
 end
