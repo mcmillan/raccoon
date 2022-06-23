@@ -2,10 +2,13 @@ defmodule Raccoon.Store do
   def get do
     case Redix.command(:redis, ["MGET", "raccoon_data", "raccoon_updated_at"]) do
       {:ok, [nil, nil]} ->
-        []
+        {:ok, [], %{}}
 
       {:ok, [data, updated_at]} ->
-        %{data: Jason.decode!(data), meta: %{updated_at: updated_at}}
+        {:ok, Jason.decode!(data), %{updated_at: updated_at}}
+
+      _ ->
+        {:error}
     end
   end
 

@@ -7,24 +7,45 @@ defmodule Raccoon.Router do
   plug(:dispatch)
 
   get "/collections" do
-    json_string = Jason.encode!(Raccoon.Store.get())
+    {:ok, data, meta} = Raccoon.Store.get()
 
-    conn
-    |> put_resp_header("content-type", "application/json")
-    |> send_resp(200, json_string)
+    send_json(conn, data, meta)
   end
 
   get "/healthz" do
     case Raccoon.Store.ping() do
       {:ok, _} ->
-        send_resp(conn, 204, "")
+        send_json(conn, %{redis: :ok})
 
       _ ->
-        send_resp(conn, 500, "")
+        send_empty_body(conn, 500)
     end
   end
 
   match _ do
-    send_resp(conn, 404, "")
+    send_empty_body(conn, 404)
+  end
+
+  defp send_json(conn, data) when is_list(data) or is_map(data) do
+    send_json(conn, data, nil, 200)
+  end
+
+  defp send_json(conn, data, meta)
+       when (is_list(data) or is_map(data)) and (is_map(meta) or is_nil(meta)) do
+    send_json(conn, data, meta, 200)
+  end
+
+  defp send_json(conn, data, meta, status)
+       when (is_list(data) or is_map(data)) and (is_map(meta) or is_nil(meta)) and
+              status in 200..599 do
+    json_string = Jason.encode!(%{data: data, meta: meta || %{}})
+
+    conn
+    |> put_resp_header("content-type", "application/json")
+    |> send_resp(status, json_string)
+  end
+
+  defp send_empty_body(conn, status) when status in 200..599 do
+    send_resp(conn, status, "")
   end
 end
