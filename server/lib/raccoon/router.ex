@@ -1,7 +1,7 @@
 defmodule Raccoon.Router do
   use Plug.Router
 
-  plug(Plug.RequestId)
+  plug(Plug.RequestId, http_header: "raccoon-request-id")
   plug(Plug.Logger)
   plug(:match)
   plug(:dispatch)
