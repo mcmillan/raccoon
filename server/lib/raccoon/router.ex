@@ -6,7 +6,7 @@ defmodule Raccoon.Router do
   plug(:match)
   plug(:dispatch)
 
-  get "/" do
+  get "/collections" do
     json_string = Jason.encode!(Raccoon.Store.get())
 
     conn
