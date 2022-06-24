@@ -1,5 +1,5 @@
+import arrow
 from dataclasses import dataclass
-from datetime import datetime
 from functools import reduce
 
 
@@ -7,7 +7,7 @@ from functools import reduce
 class Collection:
     id: str
     colour: str
-    date: datetime
+    date: arrow.Arrow
 
 
 class Collections:
@@ -15,15 +15,7 @@ class Collections:
 
     @classmethod
     def from_dicts(cls, dicts: list[dict]):
-        def transform_dict(dict: dict) -> Collection:
-            try:
-                dict['date'] = datetime.fromisoformat(dict['date'])
-            except:
-                pass
-
-            return Collection(**dict)
-
-        return cls(list(map(transform_dict, dicts)))
+        return cls(list(map(lambda dict: Collection(**dict), dicts)))
 
     def __init__(self, collections: list[Collection]):
         self.__collections = collections
