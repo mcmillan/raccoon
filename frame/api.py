@@ -9,9 +9,7 @@ class ApiException(BaseException):
 
 
 def get_collections() -> Tuple[list[dict], dict]:
-    return _handle_response(
-        requests.get(_url_for('/collections'))
-    )
+    return _handle_response(requests.get(_url_for("/collections")))
 
 
 def _handle_response(response: requests.Response) -> Tuple[Any, dict]:
@@ -26,12 +24,12 @@ def _handle_response(response: requests.Response) -> Tuple[Any, dict]:
 
     if response.status_code != 200:
         raise ApiException(
-            f'Non-200 response code received from API: {response.status_code}'
+            f"Non-200 response code received from API: {response.status_code}"
         )
 
     json = response.json(object_hook=parse_datetimes)
 
-    return (json['data'], json['meta'])
+    return (json["data"], json["meta"])
 
 
 def _url_for(endpoint: str) -> str:

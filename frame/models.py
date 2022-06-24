@@ -47,7 +47,9 @@ class Collections:
 
     @property
     def next(self) -> list[Collection]:
-        def reduce_handler(acc: list[Collection], collection: Collection) -> list[Collection]:
+        def reduce_handler(
+            acc: list[Collection], collection: Collection
+        ) -> list[Collection]:
             if len(acc) == 0 or acc[-1].date == collection.date:
                 acc.append(collection)
             return acc

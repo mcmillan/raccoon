@@ -9,9 +9,9 @@ from models import Collections
 
 
 SIZE = (600, 448)
-FONT_HEADING = ImageFont.truetype('./fonts/IBMPlexSans-Bold.ttf', 36)
-FONT_BODY = ImageFont.truetype('./fonts/IBMPlexSans-Regular.ttf', 24)
-FONT_WARNING = ImageFont.truetype('./fonts/IBMPlexSans-Bold.ttf', 15)
+FONT_HEADING = ImageFont.truetype("./fonts/IBMPlexSans-Bold.ttf", 36)
+FONT_BODY = ImageFont.truetype("./fonts/IBMPlexSans-Regular.ttf", 24)
+FONT_WARNING = ImageFont.truetype("./fonts/IBMPlexSans-Bold.ttf", 15)
 GUTTER = 30
 WARNING_SIZE = 40
 
@@ -23,12 +23,12 @@ def render_collections(collections: Collections) -> Image.Image:
     segment_size = math.ceil(SIZE[1] / segment_count) - warning_offset
 
     for index, collection in enumerate(collections.all):
-        background_y = (segment_size * (index))
+        background_y = segment_size * (index)
         center_y = background_y + (segment_size / 2)
 
         draw.rectangle(
             xy=(0, background_y, SIZE[0], background_y + segment_size),
-            fill=collection.background_color
+            fill=collection.background_color,
         )
 
         draw.text(
@@ -36,7 +36,7 @@ def render_collections(collections: Collections) -> Image.Image:
             text=collection.colour,
             font=FONT_HEADING,
             fill=collection.text_color,
-            anchor="lm"
+            anchor="lm",
         )
 
         draw.text(
@@ -44,7 +44,7 @@ def render_collections(collections: Collections) -> Image.Image:
             text=f"{collection.date.humanize(granularity='day')}",
             font=FONT_BODY,
             fill=collection.text_color,
-            anchor="rm"
+            anchor="rm",
         )
 
     if collections.stale:
@@ -53,22 +53,17 @@ def render_collections(collections: Collections) -> Image.Image:
         center_y = background_y + (WARNING_SIZE / 2)
 
         draw.rectangle(
-            xy=(0, background_y, SIZE[0], background_y + WARNING_SIZE),
-            fill=colors.RED
+            xy=(0, background_y, SIZE[0], background_y + WARNING_SIZE), fill=colors.RED
         )
 
-        draw.line(
-            xy=(0, background_y, 600, background_y),
-            width=1,
-            fill=colors.WHITE
-        )
+        draw.line(xy=(0, background_y, 600, background_y), width=1, fill=colors.WHITE)
 
         draw.text(
             xy=(center_x, center_y),
             text=f"Data might be stale. Last updated at {collections.updated_at.format()}",
             fill=colors.WHITE,
             font=FONT_WARNING,
-            anchor="mm"
+            anchor="mm",
         )
 
     return image
@@ -81,20 +76,22 @@ def render_error(exception: BaseException) -> Image.Image:
         xy=(GUTTER, GUTTER),
         text=exception.__class__.__name__,
         fill=colors.WHITE,
-        font=FONT_HEADING
+        font=FONT_HEADING,
     )
 
     draw.text(
         xy=(GUTTER, GUTTER + 60),
-        text='\n'.join(textwrap.wrap(exception.args[0], 24)),
+        text="\n".join(textwrap.wrap(exception.args[0], 24)),
         fill=colors.WHITE,
-        font=FONT_BODY
+        font=FONT_BODY,
     )
 
     return image
 
 
-def __create_canvas(background_color: Tuple[int, int, int] = colors.WHITE) -> Tuple[Image.Image, ImageDraw.ImageDraw]:
+def __create_canvas(
+    background_color: Tuple[int, int, int] = colors.WHITE
+) -> Tuple[Image.Image, ImageDraw.ImageDraw]:
     image = Image.new("RGB", SIZE, background_color)
     draw = ImageDraw.Draw(image)
     return (image, draw)
