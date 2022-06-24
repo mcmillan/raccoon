@@ -28,7 +28,9 @@ defmodule Raccoon.Scraper do
         %{
           "content-type": "application/x-www-form-urlencoded",
           "user-agent": "raccoon (github.com/mcmillan/raccoon)"
-        }
+        },
+        timeout: 30_000,
+        recv_timeout: 30_000
       )
 
     case request do
