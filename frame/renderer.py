@@ -23,7 +23,7 @@ def render_collections(collections: Collections) -> Image.Image:
     segment_size = math.ceil(SIZE[1] / segment_count) - warning_offset
 
     for index, collection in enumerate(collections.all):
-        background_y = segment_size * (index)
+        background_y = segment_size * index
         center_y = background_y + (segment_size / 2)
 
         draw.rectangle(
@@ -41,7 +41,7 @@ def render_collections(collections: Collections) -> Image.Image:
 
         draw.text(
             xy=(SIZE[0] - GUTTER, center_y),
-            text=f"{collection.date.humanize(granularity='day')}",
+            text=collection.date.humanize(granularity="day"),
             font=FONT_BODY,
             fill=collection.text_color,
             anchor="rm",
@@ -56,7 +56,9 @@ def render_collections(collections: Collections) -> Image.Image:
             xy=(0, background_y, SIZE[0], background_y + WARNING_SIZE), fill=colors.RED
         )
 
-        draw.line(xy=(0, background_y, 600, background_y), width=1, fill=colors.WHITE)
+        draw.line(
+            xy=(0, background_y, SIZE[0], background_y), width=1, fill=colors.WHITE
+        )
 
         draw.text(
             xy=(center_x, center_y),
