@@ -1,8 +1,7 @@
 import requests
 import arrow
 from typing import Any, Tuple
-
-API_ROOT = 'https://api.raccoon.pinyapple.com'
+import config
 
 
 class ApiException(BaseException):
@@ -36,4 +35,4 @@ def _handle_response(response: requests.Response) -> Tuple[Any, dict]:
 
 
 def _url_for(endpoint: str) -> str:
-    return API_ROOT + endpoint
+    return config.API_ROOT + endpoint
