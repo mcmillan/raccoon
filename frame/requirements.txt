@@ -3,3 +3,4 @@ types-requests==2.27.31
 pillow==9.1.1
 types-pillow==9.0.20
 arrow==1.2.2
+inky[rpi]==1.3.2

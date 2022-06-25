@@ -1,8 +1,8 @@
-FROM python:3.10-alpine
+FROM python:3.10-slim
 
 WORKDIR /app
 
-RUN apk update && apk add gcc musl-dev freetype-dev zlib-dev jpeg-dev
+RUN apt-get update && apt-get install -y gcc
 
 COPY requirements.txt ./
 RUN pip install -r requirements.txt
