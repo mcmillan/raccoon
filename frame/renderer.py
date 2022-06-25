@@ -1,17 +1,22 @@
 import math
+from pathlib import Path
 import textwrap
 from typing import Tuple
-import arrow
 from PIL import Image, ImageDraw, ImageFont
 from functools import reduce
 import colors
 from models import Collections
 
 
+def __load_font(name: str, size: int) -> ImageFont.FreeTypeFont:
+    path = str(Path(__file__).parent / "fonts" / name)
+    return ImageFont.truetype(path, size)
+
+
 SIZE = (600, 448)
-FONT_HEADING = ImageFont.truetype("./fonts/IBMPlexSans-Bold.ttf", 36)
-FONT_BODY = ImageFont.truetype("./fonts/IBMPlexSans-Regular.ttf", 24)
-FONT_WARNING = ImageFont.truetype("./fonts/IBMPlexSans-Bold.ttf", 15)
+FONT_HEADING = __load_font("IBMPlexSans-Bold.ttf", 36)
+FONT_BODY = __load_font("IBMPlexSans-Regular.ttf", 24)
+FONT_WARNING = __load_font("IBMPlexSans-Bold.ttf", 15)
 GUTTER = 30
 WARNING_SIZE = 40
 
